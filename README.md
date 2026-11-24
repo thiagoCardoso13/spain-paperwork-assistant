@@ -27,7 +27,7 @@ question ──embed──▶ top chunks + neighbours + best page ──▶ Gemi
 |---|---|---|
 | UI / hosting | Streamlit, Streamlit Community Cloud | free |
 | Embeddings | `paraphrase-multilingual-MiniLM-L12-v2` through `fastembed` (ONNX, CPU, runs locally) | free, no API calls |
-| Vector database | ChromaDB, index built offline and committed (≈1 MB) | free |
+| Vector database | ChromaDB, index built offline and committed (≈3 MB) | free |
 | LLM | Gemini free tier: `gemini-3.5-flash-lite` with automatic fallback to other free models | free (quota-limited) |
 
 ### Decisions worth knowing
