@@ -2,5 +2,5 @@ streamlit>=1.50
 fastembed>=0.7
 chromadb>=1.0
 langchain-google-genai>=4.0
-langchain-groq>=1.0   # optional second free provider (GROQ_API_KEY)
+langchain-groq>=1.0   # optional second free provider (GROQ_API_KEY); editing this file forces a full restart on Streamlit Cloud
 python-dotenv>=1.0
