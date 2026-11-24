@@ -1,5 +1,7 @@
 # 📄 Spain Paperwork Assistant
 
+[![CI](https://github.com/thiagoCardoso13/spain-paperwork-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/thiagoCardoso13/spain-paperwork-assistant/actions/workflows/ci.yml)
+
 A chat that answers questions about **NIE, empadronamiento, the health card (SIP) and degree recognition** in Spain, in Spanish,
 English or Portuguese, and **cites the official page each answer comes from**.
 
