@@ -8,7 +8,7 @@ from typing import Callable
 
 from rag.retrieve import Hit, retrieve
 
-MAX_DISTANCE = 0.58  # cosine distance above this = "not about my documents" (see docs/PLAN.md)
+MAX_DISTANCE = 0.75  # hard refusal only for clearly unrelated questions; in the grey zone (0.58-0.75) the model decides, see docs/PLAN.md
 DEFAULT_MODEL = "gemini-3.5-flash-lite"  # the fast one; the bigger flash took ~2.5 min per question on the free tier
 
 SYSTEM = """You are an assistant that explains paperwork for foreigners in Spain (NIE, empadronamiento, health card, degree recognition).
@@ -72,11 +72,11 @@ def guess_language(q: str) -> str:
 
 
 def cited(text: str, sources: list[Source]) -> list[tuple[int, Source]]:
-    """(number, source) for the sources the answer cites as [n]; all of them if it cites none."""
+    """(number, source) for the sources the answer cites as [n]. No citation means "not found": list nothing."""
     import re
 
     nums = sorted({int(n) for n in re.findall(r"\[(\d+)\]", text) if 0 < int(n) <= len(sources)})
-    return [(n, sources[n - 1]) for n in (nums or range(1, len(sources) + 1))]
+    return [(n, sources[n - 1]) for n in nums]
 
 
 LANG_NAME = {"es": "Spanish", "pt": "Portuguese", "en": "English"}
@@ -148,9 +148,10 @@ def _text(content) -> str:
     return "".join(p.get("text", "") if isinstance(p, dict) else str(p) for p in content)
 
 
-def answer(question: str, embed: Callable, llm=None, k: int = 4) -> Answer:
-    hits = [h for h in retrieve(question, embed, k=k) if h.distance <= MAX_DISTANCE]
-    if not hits:
+def answer(question: str, embed: Callable, llm=None, k: int = 5) -> Answer:
+    hits = retrieve(question, embed, k=k)
+    # refuse only when even the BEST match is far away; judging every chunk dropped right pages that were merely worded differently
+    if not hits or min(h.distance for h in hits) > MAX_DISTANCE:
         return Answer(NO_ANSWER[guess_language(question)], [], grounded=False)
     sources = group_by_page(hits)
     llm = llm or default_llm()

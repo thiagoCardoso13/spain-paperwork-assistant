@@ -1,0 +1,9 @@
+# Questions the assistant should NOT answer from its sources: it must refuse without calling the model.
+- What is the best pizza in Valencia?
+- Who won the 2022 football World Cup?
+- How do I make a paella?
+- Write me a poem about the sea.
+- ¿Cuál es la capital de Francia?
+- Como instalar Python no Mac?
+- What is the weather like in Elche today?
+- Recommend a good laptop for programming.

@@ -29,6 +29,19 @@
 - q: Qual a diferença entre homologação e declaração de equivalência de um diploma?
   expect: [homologacion-rd889]
 - q: What forms do I need to apply for the NIE from abroad?
-  expect: [nie-consulado-miami, nie-consulado-paris, nie-consulado-washington-en]
+  expect: [nie-consulado-paris, nie-consulado-washington-en]
 - q: ¿Qué tasa hay que pagar para pedir el NIE?
-  expect: [nie-consulado-miami, nie-consulado-paris, nie-consulado-washington-en]
+  expect: [nie-consulado-paris, nie-consulado-washington-en]
+- q: ¿Cómo pido el NIE si ya estoy en España?
+  expect: [nie-policia-asignacion]
+  contains: [Comisarías]
+- q: Can I ask for an NIE if I am not a resident? What do I have to explain?
+  expect: [nie-policia-asignacion]
+  contains: [motivos]
+- q: How long does the police take to resolve an NIE request?
+  expect: [nie-policia-asignacion]
+  contains: [cinco días]
+- q: Como solicitar um certificado de não residente na Espanha?
+  expect: [nie-policia-no-residente]
+- q: ¿Qué es el certificado de residente de ciudadano de la Unión?
+  expect: [nie-policia-residente]

@@ -1,9 +1,19 @@
 # Official public pages only. Add a page here, then run: python -m rag.ingest
 # Note: sede.administracionespublicas.gob.es answers 503 to automated requests, so it is not used.
-- id: nie-consulado-miami
+# Consulate NIE pages are near-identical; two are kept (ES, EN) so they do not crowd out the police page.
+# The Policía Nacional sede (sede.policia.gob.es) is a different host and works.
+- id: nie-policia-asignacion
   topic: NIE
-  title: Ministerio de Asuntos Exteriores - Número de Identidad de Extranjero (NIE), Consulado en Miami (solicitud desde el extranjero)
-  url: https://www.exteriores.gob.es/Consulados/miami/es/ServiciosConsulares/Paginas/index.aspx?scca=Pasaportes+y+otros+documentos&scco=Estados+Unidos&scd=196&scs=N%C3%BAmero+de+Identidad+de+Extranjero+%28NIE%29
+  title: Sede Electrónica Policía Nacional - Asignación de NIE a instancia de interesado (dentro de España)
+  url: https://sede.policia.gob.es/portalCiudadano/_es/tramites_extranjeria_tramite_asignacion_nie.php
+- id: nie-policia-no-residente
+  topic: NIE
+  title: Sede Electrónica Policía Nacional - Certificado de no residente
+  url: https://sede.policia.gob.es/portalCiudadano/_es/tramites_extranjeria_tramite_certificado_noresidente.php
+- id: nie-policia-residente
+  topic: NIE
+  title: Sede Electrónica Policía Nacional - Certificado de residente
+  url: https://sede.policia.gob.es/portalCiudadano/_es/tramites_extranjeria_tramite_certificado_residente.php
 - id: nie-consulado-paris
   topic: NIE
   title: Ministerio de Asuntos Exteriores - NIE, Consulado en París (solicitud desde el extranjero)

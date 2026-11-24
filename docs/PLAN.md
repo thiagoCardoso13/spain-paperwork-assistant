@@ -40,3 +40,10 @@ Free-tier limits are real: keep a per-session question cap, cache answers, and s
 - Pages change or block scraping: keep the raw snapshot date in the index and show it in the UI.
 - Quota: low cap per session, cache repeated questions.
 - Legal accuracy: cite, disclaim, never present as official.
+
+## Retrieval improvements (second pass)
+- Added the Policía Nacional sede pages (NIE assignment, residence and non-residence certificates).
+- Hybrid search: cosine + BM25 with reciprocal-rank fusion (keyword weight 0.5). Largest single gain.
+- Refusal threshold moved from 0.58 to 0.75 (best match); the 0.58 cutoff threw away right pages worded differently.
+- Evaluation now has a held-out set and an off-topic set. Query expansion with synonyms was tried and removed (it lowered the score).
+- Open: cross-language weakness of the small embedding model; a larger model does not fit the free hosting memory.

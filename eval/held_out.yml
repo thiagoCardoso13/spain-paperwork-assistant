@@ -1,0 +1,23 @@
+# Written AFTER the retrieval parameters were tuned on eval/questions.yml, and never used for tuning.
+- q: ¿Dónde puedo empadronarme si vivo en Elche?
+  expect: [padron-elche, padron-elche-omac]
+- q: What do I need to bring to register at the town hall if I rent a room in a shared flat?
+  expect: [padron-elche]
+  contains: [habitaciones, arrendada]
+- q: ¿El NIE se puede pedir en una comisaría de policía?
+  expect: [nie-policia-asignacion]
+  contains: [Comisarías]
+- q: Does the SIP health card work in other EU countries?
+  expect: [sip-faq, sip-individual]
+  contains: [Europea, europe]
+- q: ¿Qué es la declaración de equivalencia de un título extranjero?
+  expect: [homologacion-rd889]
+- q: Posso usar o meu passaporte em vez do NIE para me empadronar?
+  expect: [padron-elche]
+  contains: [pasaporte]
+- q: ¿Tengo que pagar algo por el empadronamiento?
+  expect: [padron-elche]
+  contains: [Pago de tasas]
+- q: Is registering at the padrón free of charge?
+  expect: [padron-elche]
+  contains: [Pago de tasas]

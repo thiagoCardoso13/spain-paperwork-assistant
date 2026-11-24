@@ -31,8 +31,8 @@ def index(tmp_path, monkeypatch):
     )
     idx = tmp_path / "idx"
     build_index(fake_embed, index_dir=idx, raw_dir=raw)
-    rt._collection.cache_clear()
-    monkeypatch.setattr(ans, "retrieve", lambda q, e, k=4: rt.retrieve(q, e, k=k, index_dir=idx))
+    rt._collection.cache_clear(); rt._lexical.cache_clear()
+    monkeypatch.setattr(ans, "retrieve", lambda q, e, k=5: rt.retrieve(q, e, k=k, index_dir=idx))
     return idx
 
 
@@ -54,7 +54,7 @@ def test_no_relevant_context_means_no_llm_call(index):
     try:
         out = ans.answer("What is the best pizza in Valencia?", fake_embed, llm=llm)
     finally:
-        ans.MAX_DISTANCE = 0.58
+        ans.MAX_DISTANCE = 0.75
     assert not out.grounded and llm.prompts == []
     assert "could not find" in out.text
 
@@ -80,14 +80,14 @@ def test_all_models_down_gives_friendly_message_with_sources(index):
     try:
         out = ans.answer("¿Qué es el NIE?", fake_embed, llm=ans.FallbackLLM([Boom(), Boom()], pause=0))
     finally:
-        ans.MAX_DISTANCE = 0.58
+        ans.MAX_DISTANCE = 0.75
     assert not out.grounded and out.busy and out.sources and "saturado" in out.text
 
 
-def test_cited_keeps_numbers_and_falls_back_to_all():
+def test_cited_keeps_numbers_and_lists_nothing_when_uncited():
     srcs = [ans.Source(f"S{i}", f"https://s{i}", "T", "d", "x") for i in range(1, 4)]
     assert [n for n, _ in ans.cited("Dato [2] y otro [2], [9]", srcs)] == [2]
-    assert [n for n, _ in ans.cited("Sin citas", srcs)] == [1, 2, 3]
+    assert ans.cited("No encuentro la respuesta", srcs) == []  # a "not found" answer must not list pages
 
 
 def test_prompt_pins_the_answer_language():
