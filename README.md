@@ -7,7 +7,9 @@ English or Portuguese, and **cites the official page each answer comes from**.
 
 Built with **Python · Streamlit · fastembed · ChromaDB · Gemini**, and **100% free to run**: no paid service, no credit card.
 
-> 🔗 **Live demo:** _coming soon_
+> 🔗 **Live demo:** [spain-paperwork-assistant-y7ancesxw2rncyukxz8r5s.streamlit.app](https://spain-paperwork-assistant-y7ancesxw2rncyukxz8r5s.streamlit.app/)
+>
+> Free hosting and free AI quota: the app sleeps when idle, the first question downloads the embedding model (about 30 seconds), and each session is limited to 10 questions.
 
 ## The problem
 

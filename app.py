@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 import os
+import time
 
 import streamlit as st
 from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv(usecwd=True))
-for key in ("GOOGLE_API_KEY", "MAX_QUESTIONS", "LLM_MODEL"):  # Streamlit Cloud keeps secrets outside the environment
+for key in ("GOOGLE_API_KEY", "GROQ_API_KEY", "MAX_QUESTIONS", "LLM_MODEL"):  # Streamlit Cloud keeps secrets outside the environment
     try:
         if key in st.secrets and not os.getenv(key):
             os.environ[key] = str(st.secrets[key])
@@ -39,10 +40,21 @@ st.markdown(
 )
 
 
-@st.cache_data(show_spinner=False, ttl=3600)
+@st.cache_resource
+def _answer_cache() -> dict:
+    return {}
+
+
 def cached_answer(question: str):
-    """Repeated questions cost no model quota."""
-    return answer(question, embed)
+    """Repeated questions cost no model quota. A failed (busy) answer is never cached."""
+    store = _answer_cache()
+    hit = store.get(question)
+    if hit and time.time() - hit[0] < 3600:
+        return hit[1]
+    result = answer(question, embed)
+    if not result.busy:
+        store[question] = (time.time(), result)
+    return result
 
 
 def render_sources(sources):
@@ -74,11 +86,11 @@ with st.sidebar:
     )
     st.caption(f"Questions used: {st.session_state.asked}/{MAX_QUESTIONS}")
 
-for msg in st.session_state.history:
+for i, msg in enumerate(st.session_state.history):
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
         if msg.get("sources"):
-            with st.expander(f"Sources ({len(msg['sources'])})"):
+            with st.expander(f"Sources ({len(msg['sources'])})", expanded=i == len(st.session_state.history) - 1):
                 render_sources(msg["sources"])
 
 question = st.chat_input("Ask your question…", disabled=st.session_state.asked >= MAX_QUESTIONS)
@@ -95,9 +107,6 @@ if question and st.session_state.asked < MAX_QUESTIONS:
     with st.chat_message("assistant"):
         with st.spinner("Searching the official pages…"):
             result = cached_answer(question)
-        st.markdown(result.text)
-        shown = cited(result.text, result.sources) if result.sources else []
-        if shown:
-            with st.expander(f"Sources ({len(shown)})", expanded=True):
-                render_sources(shown)
+    shown = cited(result.text, result.sources) if result.sources else []
     st.session_state.history.append({"role": "assistant", "content": result.text, "sources": shown})
+    st.rerun()  # redraw so the counter and the disabled input reflect this question

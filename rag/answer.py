@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import time
 from dataclasses import dataclass, field
 from typing import Callable
 
@@ -47,6 +48,7 @@ class Answer:
     text: str
     sources: list[Source] = field(default_factory=list)  # one entry per page, numbered [1], [2]... in the answer
     grounded: bool = True
+    busy: bool = False  # the free AI service failed: do not cache this answer
 
 
 def group_by_page(hits: list[Hit]) -> list[Source]:
@@ -107,22 +109,37 @@ FALLBACK_MODELS = ["gemini-3.1-flash-lite", "gemini-3.5-flash"]  # each model ha
 class FallbackLLM:
     """Try the models in order; a busy (503) or out-of-quota (429) model hands over to the next one."""
 
-    def __init__(self, llms: list):
+    def __init__(self, llms: list, pause: float = 2.0):
         self.llms = llms
+        self.pause = pause
         self.last_error: Exception | None = None
 
     def invoke(self, prompt: str):
         for llm in self.llms:
-            try:
-                return llm.invoke(prompt)
-            except Exception as exc:  # network, 429, 503...
-                self.last_error = exc
+            for attempt in range(2):
+                try:
+                    return llm.invoke(prompt)
+                except Exception as exc:  # network, 429, 503...
+                    self.last_error = exc
+                    transient = any(c in str(exc) for c in ("503", "504", "UNAVAILABLE", "DEADLINE"))
+                    if not transient:
+                        break  # quota or auth problems will not fix themselves in 2 seconds
+                    time.sleep(self.pause)
         raise self.last_error  # type: ignore[misc]
+
+
+def _groq():
+    from langchain_groq import ChatGroq
+
+    return ChatGroq(model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"), api_key=os.getenv("GROQ_API_KEY"), temperature=0, timeout=25, max_retries=0)
 
 
 def default_llm() -> FallbackLLM:
     names = [os.getenv("LLM_MODEL", DEFAULT_MODEL), *FALLBACK_MODELS]
-    return FallbackLLM([_gemini(n) for n in dict.fromkeys(names)])
+    llms = [_gemini(n) for n in dict.fromkeys(names)]
+    if os.getenv("GROQ_API_KEY"):  # optional second free provider, used when every Gemini model is busy
+        llms.append(_groq())
+    return FallbackLLM(llms)
 
 
 def _text(content) -> str:
@@ -140,5 +157,5 @@ def answer(question: str, embed: Callable, llm=None, k: int = 4) -> Answer:
     try:
         reply = llm.invoke(build_prompt(question, sources))
     except Exception:
-        return Answer(BUSY[guess_language(question)], sources, grounded=False)
+        return Answer(BUSY[guess_language(question)], sources, grounded=False, busy=True)
     return Answer(_text(reply.content).strip(), sources, grounded=True)

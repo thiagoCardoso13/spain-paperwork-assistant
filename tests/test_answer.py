@@ -71,17 +71,17 @@ class Boom:
 
 
 def test_fallback_llm_uses_next_model():
-    out = ans.FallbackLLM([Boom(), FakeLLM()]).invoke("hola")
+    out = ans.FallbackLLM([Boom(), FakeLLM()], pause=0).invoke("hola")
     assert out.content == "Respuesta [1]"
 
 
 def test_all_models_down_gives_friendly_message_with_sources(index):
     ans.MAX_DISTANCE = 10
     try:
-        out = ans.answer("¿Qué es el NIE?", fake_embed, llm=ans.FallbackLLM([Boom(), Boom()]))
+        out = ans.answer("¿Qué es el NIE?", fake_embed, llm=ans.FallbackLLM([Boom(), Boom()], pause=0))
     finally:
         ans.MAX_DISTANCE = 0.58
-    assert not out.grounded and out.sources and "saturado" in out.text
+    assert not out.grounded and out.busy and out.sources and "saturado" in out.text
 
 
 def test_cited_keeps_numbers_and_falls_back_to_all():
@@ -94,3 +94,17 @@ def test_prompt_pins_the_answer_language():
     srcs = [ans.Source("S", "https://s", "T", "d", "texto")]
     assert "Write the answer in English" in ans.build_prompt("What do I need?", srcs)
     assert "Write the answer in Portuguese" in ans.build_prompt("Como pedir o cartão?", srcs)
+
+
+def test_transient_error_is_retried_on_the_same_model():
+    class Flaky:
+        calls = 0
+
+        def invoke(self, prompt):
+            Flaky.calls += 1
+            if Flaky.calls == 1:
+                raise RuntimeError("503 UNAVAILABLE")
+            return FakeLLM().invoke(prompt)
+
+    assert ans.FallbackLLM([Flaky()], pause=0).invoke("x").content == "Respuesta [1]"
+    assert Flaky.calls == 2
