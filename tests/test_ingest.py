@@ -50,3 +50,12 @@ def test_build_index_stores_vectors_and_metadata(tmp_path):
     assert col.count() == n > 0
     res = col.get(limit=1, include=["metadatas"])
     assert res["metadatas"][0]["topic"] == "NIE"
+
+
+def test_overlap_never_starts_mid_word():
+    words = [f"palabra{i}" for i in range(400)]
+    text = "\n".join(" ".join(words[i : i + 10]) for i in range(0, 400, 10))
+    chunks = chunk_text(text, max_chars=300, overlap=60)
+    assert len(chunks) > 3
+    for c in chunks:
+        assert c.split()[0].startswith("palabra"), c[:30]

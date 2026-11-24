@@ -54,7 +54,9 @@ def build_index(embed: Callable[[list[str]], list[list[float]]], index_dir: Path
             ids=[r["id"] for r in part],
             documents=[r["text"] for r in part],
             metadatas=[r["meta"] for r in part],
-            embeddings=embed([r["text"] for r in part]),
+            # the source title and topic go into the embedding (not into the stored text) so short
+            # chunks like "Documentos a presentar" still know which procedure they belong to
+            embeddings=embed([f"{r['meta']['title']} ({r['meta']['topic']})\n{r['text']}" for r in part]),
         )
     return len(records)
 

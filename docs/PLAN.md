@@ -28,11 +28,11 @@ Free-tier limits are real: keep a per-session question cap, cache answers, and s
 - Tests run without any API key (fake embeddings / fake LLM), like Project_AI_Agent.
 
 ## Phases
-1. [ ] Sources list + downloader + text cleaning
-2. [ ] Chunking + embeddings + Chroma index (`rag/ingest.py`)
-3. [ ] Retrieval + answer chain with citations (`rag/answer.py`)
-4. [ ] Streamlit UI (chat, sources panel, disclaimer, question cap)
-5. [ ] Evaluation set + hit-rate report in the README
+1. [x] Sources list + downloader + text cleaning
+2. [x] Chunking + embeddings + Chroma index (`rag/ingest.py`)
+3. [x] Retrieval + answer chain with citations (`rag/answer.py`)
+4. [x] Streamlit UI (chat, sources panel, disclaimer, question cap)
+5. [x] Evaluation set + hit-rate report in the README
 6. [ ] GitHub repo, CI, Streamlit Cloud deploy, README with GIF
 7. [ ] Add the card to the portfolio site and write the post
 

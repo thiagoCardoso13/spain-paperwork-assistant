@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 
-def chunk_text(text: str, max_chars: int = 900, overlap: int = 150) -> list[str]:
+def chunk_text(text: str, max_chars: int = 1200, overlap: int = 300) -> list[str]:
     paragraphs = [p.strip() for p in text.split("\n") if p.strip()]
     chunks: list[str] = []
     current = ""
@@ -12,7 +12,7 @@ def chunk_text(text: str, max_chars: int = 900, overlap: int = 150) -> list[str]
         for piece in pieces:
             if current and len(current) + 1 + len(piece) > max_chars:
                 chunks.append(current)
-                current = (current[-overlap:] + " " + piece).strip() if overlap else piece
+                current = (_tail(current, overlap) + " " + piece).strip() if overlap else piece
             else:
                 current = f"{current}\n{piece}".strip() if current else piece
     if current:
@@ -41,3 +41,12 @@ def _split_long(para: str, max_chars: int) -> list[str]:
             piece = piece[max_chars:]
         final.append(piece)
     return final
+
+
+def _tail(text: str, size: int) -> str:
+    """Last `size` characters, moved forward to the next word boundary so a chunk never starts mid-word."""
+    tail = text[-size:]
+    if len(text) > size and not text[-size - 1].isspace():
+        cut = tail.find(" ")
+        tail = tail[cut + 1 :] if cut != -1 else ""
+    return tail.strip()

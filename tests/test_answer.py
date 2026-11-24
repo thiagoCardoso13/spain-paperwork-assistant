@@ -1,0 +1,96 @@
+import json
+
+import pytest
+
+import rag.answer as ans
+from rag.ingest import build_index
+from rag import retrieve as rt
+from tests.test_ingest import fake_embed
+
+
+class FakeLLM:
+    def __init__(self):
+        self.prompts = []
+
+    def invoke(self, prompt):
+        self.prompts.append(prompt)
+
+        class R:
+            content = "Respuesta [1]"
+
+        return R()
+
+
+@pytest.fixture()
+def index(tmp_path, monkeypatch):
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    (raw / "a.json").write_text(
+        json.dumps({"id": "a", "topic": "NIE", "title": "Fuente A", "url": "https://a.example", "fetched_at": "2026-01-01", "text": "Texto oficial sobre el NIE.\n" * 40}),
+        encoding="utf-8",
+    )
+    idx = tmp_path / "idx"
+    build_index(fake_embed, index_dir=idx, raw_dir=raw)
+    rt._collection.cache_clear()
+    monkeypatch.setattr(ans, "retrieve", lambda q, e, k=4: rt.retrieve(q, e, k=k, index_dir=idx))
+    return idx
+
+
+def test_answer_cites_sources_and_prompts_with_context(index):
+    llm = FakeLLM()
+    monkeypatch_distance = ans.MAX_DISTANCE
+    ans.MAX_DISTANCE = 10  # fake embeddings are not semantic
+    try:
+        out = ans.answer("¿Qué es el NIE?", fake_embed, llm=llm)
+    finally:
+        ans.MAX_DISTANCE = monkeypatch_distance
+    assert out.grounded and out.sources and out.sources[0].url == "https://a.example"
+    assert "[1] Fuente A" in llm.prompts[0] and "¿Qué es el NIE?" in llm.prompts[0]
+
+
+def test_no_relevant_context_means_no_llm_call(index):
+    llm = FakeLLM()
+    ans.MAX_DISTANCE = -1  # nothing can be close enough
+    try:
+        out = ans.answer("What is the best pizza in Valencia?", fake_embed, llm=llm)
+    finally:
+        ans.MAX_DISTANCE = 0.58
+    assert not out.grounded and llm.prompts == []
+    assert "could not find" in out.text
+
+
+def test_language_guess():
+    assert ans.guess_language("¿Qué documentos necesito?") == "es"
+    assert ans.guess_language("Como pedir o cartão de saúde?") == "pt"
+    assert ans.guess_language("What do I need?") == "en"
+
+
+class Boom:
+    def invoke(self, prompt):
+        raise RuntimeError("503 UNAVAILABLE")
+
+
+def test_fallback_llm_uses_next_model():
+    out = ans.FallbackLLM([Boom(), FakeLLM()]).invoke("hola")
+    assert out.content == "Respuesta [1]"
+
+
+def test_all_models_down_gives_friendly_message_with_sources(index):
+    ans.MAX_DISTANCE = 10
+    try:
+        out = ans.answer("¿Qué es el NIE?", fake_embed, llm=ans.FallbackLLM([Boom(), Boom()]))
+    finally:
+        ans.MAX_DISTANCE = 0.58
+    assert not out.grounded and out.sources and "saturado" in out.text
+
+
+def test_cited_keeps_numbers_and_falls_back_to_all():
+    srcs = [ans.Source(f"S{i}", f"https://s{i}", "T", "d", "x") for i in range(1, 4)]
+    assert [n for n, _ in ans.cited("Dato [2] y otro [2], [9]", srcs)] == [2]
+    assert [n for n, _ in ans.cited("Sin citas", srcs)] == [1, 2, 3]
+
+
+def test_prompt_pins_the_answer_language():
+    srcs = [ans.Source("S", "https://s", "T", "d", "texto")]
+    assert "Write the answer in English" in ans.build_prompt("What do I need?", srcs)
+    assert "Write the answer in Portuguese" in ans.build_prompt("Como pedir o cartão?", srcs)

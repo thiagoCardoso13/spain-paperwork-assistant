@@ -1,0 +1,34 @@
+# `contains` (optional): a retrieved chunk from an expected source must also contain one of these strings.
+# Each question lists the source ids that can correctly answer it (any one counts as a hit).
+- q: ¿Qué documentos necesito para empadronarme en Elche?
+  expect: [padron-elche]
+  contains: [A235, Documentación requerida]
+- q: Where do I register my address (empadronamiento) in Elche?
+  expect: [padron-elche, padron-elche-omac]
+- q: ¿Cuánto cuesta empadronarse en Elche?
+  expect: [padron-elche]
+  contains: [Pago de tasas]
+- q: How long does the municipality take to resolve a padrón registration?
+  expect: [padron-elche]
+  contains: [Plazo de resolución]
+- q: Posso me empadronar em Elche sem contrato de aluguel?
+  expect: [padron-elche]
+  contains: [Documentación requerida]
+- q: ¿Cómo solicito la tarjeta sanitaria SIP en la Comunitat Valenciana?
+  expect: [sip-individual, sip-faq]
+- q: Como pedir o cartão de saúde na Comunidade Valenciana?
+  expect: [sip-individual, sip-faq, sip-extranjeros]
+- q: I am a foreigner without residence permit, can I get public healthcare in Valencia?
+  expect: [sip-extranjeros]
+- q: ¿Qué es el convenio especial de asistencia sanitaria y qué requisitos tiene?
+  expect: [sip-convenio]
+- q: ¿Cómo puedo homologar un título universitario extranjero en España?
+  expect: [homologacion-rd889]
+- q: Can I get my foreign university degree recognised in Spain?
+  expect: [homologacion-rd889]
+- q: Qual a diferença entre homologação e declaração de equivalência de um diploma?
+  expect: [homologacion-rd889]
+- q: What forms do I need to apply for the NIE from abroad?
+  expect: [nie-consulado-miami, nie-consulado-paris, nie-consulado-washington-en]
+- q: ¿Qué tasa hay que pagar para pedir el NIE?
+  expect: [nie-consulado-miami, nie-consulado-paris, nie-consulado-washington-en]
