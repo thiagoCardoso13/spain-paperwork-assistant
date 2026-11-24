@@ -1,0 +1,42 @@
+# Official public pages only. Add a page here, then run: python -m rag.ingest
+# Note: sede.administracionespublicas.gob.es answers 503 to automated requests, so it is not used.
+- id: nie-consulado-miami
+  topic: NIE
+  title: Ministerio de Asuntos Exteriores - Número de Identidad de Extranjero (NIE), Consulado en Miami (solicitud desde el extranjero)
+  url: https://www.exteriores.gob.es/Consulados/miami/es/ServiciosConsulares/Paginas/index.aspx?scca=Pasaportes+y+otros+documentos&scco=Estados+Unidos&scd=196&scs=N%C3%BAmero+de+Identidad+de+Extranjero+%28NIE%29
+- id: nie-consulado-paris
+  topic: NIE
+  title: Ministerio de Asuntos Exteriores - NIE, Consulado en París (solicitud desde el extranjero)
+  url: https://www.exteriores.gob.es/Consulados/paris/es/ServiciosConsulares/Paginas/index.aspx?scca=Pasaportes+y+otros+documentos&scco=Francia&scd=222&scs=N%C3%BAmero+de+Identidad+de+Extranjero+%28NIE%29
+- id: nie-consulado-washington-en
+  topic: NIE
+  title: Ministry of Foreign Affairs - Foreigner Identity Number (NIE), Consulate in Washington (application from abroad)
+  url: https://www.exteriores.gob.es/Consulados/washington/en/ServiciosConsulares/Paginas/Consular/NIE.aspx
+- id: padron-elche
+  topic: Empadronamiento
+  title: Ayuntamiento de Elche - Alta en el padrón (ficha de procedimiento)
+  url: https://sede.elche.es/sta/CarpetaPublic/doEvent?APP_CODE=STA&PAGE_CODE=CATALOGO&DETALLE=6269000000564034799500&lang=ES
+- id: padron-elche-omac
+  topic: Empadronamiento
+  title: Ayuntamiento de Elche - Oficinas OMAC
+  url: https://www.elche.es/oficina-municipal-de-atencion-ciudadana-omac/red-omac/
+- id: sip-individual
+  topic: Tarjeta sanitaria
+  title: Conselleria de Sanidad - Tarjeta Sanitaria Individual
+  url: https://www.san.gva.es/es/web/tarjeta-sanitaria/tarjeta-sanitaria-individual
+- id: sip-faq
+  topic: Tarjeta sanitaria
+  title: Conselleria de Sanidad - Preguntas frecuentes de la tarjeta sanitaria
+  url: https://www.san.gva.es/es/web/tarjeta-sanitaria/preguntas-frecuentes
+- id: sip-extranjeros
+  topic: Tarjeta sanitaria
+  title: Conselleria de Sanidad - Extranjeros no registrados y no autorizados
+  url: https://www.san.gva.es/es/web/tarjeta-sanitaria/menores-de-18-a%C3%B1os-extranjeros
+- id: sip-convenio
+  topic: Tarjeta sanitaria
+  title: Conselleria de Sanidad - Convenio especial
+  url: https://www.san.gva.es/es/web/tarjeta-sanitaria/acceso-a-la-atenci%C3%B3n-sanitaria-mediante-convenio-especial-de-la-conselleria-de-sanitat
+- id: homologacion-rd889
+  topic: Homologación de títulos
+  title: BOE - Real Decreto 889/2022 (homologación y equivalencia de títulos universitarios extranjeros)
+  url: https://www.boe.es/buscar/doc.php?id=BOE-A-2022-17045
