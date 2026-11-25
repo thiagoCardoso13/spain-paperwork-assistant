@@ -11,6 +11,8 @@ Built with **Python · Streamlit · fastembed · ChromaDB · Gemini**, and **100
 >
 > Free hosting and free AI quota: the app sleeps when idle, the first question downloads the embedding model (about 30 seconds), and each session is limited to 10 questions.
 
+![Demo: asking about empadronamiento in Elche and getting a cited answer](docs/demo.gif)
+
 ## The problem
 
 Paperwork information for foreigners is scattered across ministries, city councils and regional health services, written in
